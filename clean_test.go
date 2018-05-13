@@ -26,10 +26,12 @@ func TestFileCleanup(t *testing.T) {
 
 	defer teardown()
 
-	err = Clean(filename)
+	t.Run("testA", func(t *testing.T) {
 
-	if err != nil {
-		t.Error("Failed to delete file.")
-	}
+		err = Clean(filename)
 
+		if err != nil {
+			t.Error("Failed to delete file.")
+		}
+	})
 }
