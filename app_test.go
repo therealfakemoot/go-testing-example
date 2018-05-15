@@ -1,37 +1,64 @@
 package main
 
 import (
+	"bytes"
+	"io"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 )
 
-func setupTests(prefix string) (string, func(), error) {
+func ReadLines(f *os.File) []string {
+	f.Seek(0, 0)
+	buf := bytes.NewBuffer(nil)
+	_, err := io.Copy(buf, f)
+
+	if err != nil {
+
+	}
+
+	fullFile := buf.String()
+	lines := strings.Split(fullFile, "\n")
+
+	return lines
+}
+
+func setupTests(prefix string) (*os.File, func(), error) {
 	createdFile, err := ioutil.TempFile(os.TempDir(), prefix)
 
 	teardown := func() {
 		os.Remove(os.TempDir() + createdFile.Name())
 	}
+	createdFile.WriteString("=====\n")
+	createdFile.Sync()
 
-	return createdFile.Name(), teardown, err
+	return createdFile, teardown, err
 }
 
-func TestFileCleanup(t *testing.T) {
-	filename, teardown, err := setupTests("testA")
+func TestFileManipulator(t *testing.T) {
+	// tempFile, teardown, err := setupTests("fm")
+	tempFile, _, err := setupTests("fm")
+
+	// defer teardown()
 
 	if err != nil {
-		t.Log("Failed to create temporary file.")
-		t.Skip()
+		t.Error("Unable to open temp file.")
 	}
 
-	defer teardown()
+	fm := FileManipulator{f: tempFile}
 
-	t.Run("testA", func(t *testing.T) {
+	t.Run("Append", func(t *testing.T) {
+		s := "xxxxx\n"
+		fm.Append(s)
 
-		err = Clean(filename)
+		lines := ReadLines(tempFile)
 
-		if err != nil {
-			t.Error("Failed to delete file.")
+		if lines[len(lines)-1] != "xxxxx" {
+			t.Logf("Lines:%v\n", lines)
+			t.Fail()
 		}
+
 	})
+
 }
