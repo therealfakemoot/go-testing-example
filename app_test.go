@@ -1,25 +1,19 @@
 package main
 
 import (
-	"bytes"
+	"bufio"
 	"io"
 	"io/ioutil"
 	"os"
-	"strings"
 	"testing"
 )
 
-func ReadLines(f *os.File) []string {
-	f.Seek(0, 0)
-	buf := bytes.NewBuffer(nil)
-	_, err := io.Copy(buf, f)
-
-	if err != nil {
-
+func ScanLines(r io.Reader) []string {
+	s := bufio.NewScanner(r)
+	var lines []string
+	for s.Scan() {
+		lines = append(lines, s.Text())
 	}
-
-	fullFile := buf.String()
-	lines := strings.Split(fullFile, "\n")
 
 	return lines
 }
@@ -52,7 +46,7 @@ func TestFileManipulator(t *testing.T) {
 		s := "xxxxx\n"
 		fm.Append(s)
 
-		lines := ReadLines(tempFile)
+		lines := ScanLines(tempFile)
 
 		if lines[len(lines)-1] != "xxxxx" {
 			t.Logf("Lines:%v\n", lines)
