@@ -61,4 +61,16 @@ func TestFileManipulator(t *testing.T) {
 
 	})
 
+	t.Run("Prepend", func(t *testing.T) {
+		s := "yyyyy\n"
+		fm.Prepend(s)
+
+		lines := ScanLines(tempFile)
+
+		if lines[0] != "yyyyy" {
+			t.Logf("Lines:%#v\n", lines)
+			t.Fail()
+		}
+
+	})
 }
