@@ -31,10 +31,9 @@ func setupTests(prefix string) (*os.File, func(), error) {
 }
 
 func TestFileManipulator(t *testing.T) {
-	// tempFile, teardown, err := setupTests("fm")
-	tempFile, _, err := setupTests("fm")
+	tempFile, teardown, err := setupTests("fm")
 
-	// defer teardown()
+	defer teardown()
 
 	if err != nil {
 		t.Error("Unable to open temp file.")
@@ -49,7 +48,7 @@ func TestFileManipulator(t *testing.T) {
 		lines := ScanLines(tempFile)
 
 		if lines[len(lines)-1] != "xxxxx" {
-			t.Logf("Lines:%v\n", lines)
+			t.Logf("Lines:%#v\n", lines)
 			t.Fail()
 		}
 
